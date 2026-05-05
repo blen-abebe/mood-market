@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Mood Market</title>
+  <meta name="description" content="A student-friendly market mood dashboard that translates live crypto market data into simple explanations." />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header class="hero">
+    <nav>
+      <h2>Mood Market</h2>
+      <button id="refreshBtn">Refresh Market</button>
+    </nav>
+
+    <div class="hero-content fade-in">
+      <p class="eyebrow">finance news, translated</p>
+      <h1>Understand the market based on how you feel today.</h1>
+      <p>
+        Mood Market turns live market data into student-friendly explanations,
+        so finance feels less intimidating and more useful.
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="section-heading">
+        <p class="eyebrow">start here</p>
+        <h2>Choose your market mood</h2>
+      </div>
+
+      <div class="mood-grid">
+        <button class="mood-card active" data-mood="confused">Confused</button>
+        <button class="mood-card" data-mood="curious">Curious</button>
+        <button class="mood-card" data-mood="anxious">Anxious</button>
+        <button class="mood-card" data-mood="optimistic">Optimistic</button>
+        <button class="mood-card" data-mood="focused">Focused</button>
+        <button class="mood-card" data-mood="skeptical">Skeptical</button>
+      </div>
+    </section>
+
+    <section class="dashboard">
+      <div class="market-card large-card">
+        <p class="eyebrow">live api data</p>
+        <h2>Crypto Market Snapshot</h2>
+        <p id="apiStatus">Loading live prices...</p>
+
+        <div id="priceGrid" class="price-grid"></div>
+      </div>
+
+      <div class="market-card insight-card">
+        <p class="eyebrow">student translation</p>
+        <h2 id="moodTitle">Confused Market View</h2>
+        <p id="moodText">
+          Markets can feel random at first. Start by asking whether investors are taking more risk or pulling back.
+        </p>
+
+        <div class="mini-list">
+          <p><strong>Watch:</strong> 24-hour price changes</p>
+          <p><strong>Ask:</strong> Is this movement broad or only in one asset?</p>
+          <p><strong>Remember:</strong> One day of movement does not tell the whole story.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading">
+        <p class="eyebrow">learn the language</p>
+        <h2>Click a concept to expand it</h2>
+      </div>
+
+      <div class="accordion">
+        <button class="accordion-btn">What does volatility mean?</button>
+        <div class="accordion-content">
+          <p>Volatility means prices are moving a lot. It does not automatically mean something is good or bad. It means uncertainty is higher.</p>
+        </div>
+
+        <button class="accordion-btn">Why do investors care about Bitcoin?</button>
+        <div class="accordion-content">
+          <p>Bitcoin is often treated as a risk asset. When investors feel confident, crypto can rise. When they feel nervous, it can fall quickly.</p>
+        </div>
+
+        <button class="accordion-btn">What is a 24-hour change?</button>
+        <div class="accordion-content">
+          <p>A 24-hour change shows how much the price moved compared with yesterday. It helps you see short-term momentum.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="journal panel">
+      <div class="section-heading">
+        <p class="eyebrow">your thinking</p>
+        <h2>Market Journal</h2>
+      </div>
+
+      <textarea id="noteInput" placeholder="Write one sentence about what you think the market is signaling today..."></textarea>
+
+      <div class="journal-actions">
+        <button id="saveNoteBtn">Save Note</button>
+        <button id="clearNotesBtn" class="secondary-btn">Clear Notes</button>
+      </div>
+
+      <ul id="notesList"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Built for CSE 2004 Final Project by Blen Abebe.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
