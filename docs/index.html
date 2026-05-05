@@ -4,105 +4,168 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Mood Market</title>
-  <meta name="description" content="A student-friendly market mood dashboard that translates live crypto market data into simple explanations." />
+  <title>Market Decoder | Student Market Literacy Desk</title>
+  <meta name="description" content="A student-built market literacy platform that uses live market data and global headlines to teach students how to read financial signals." />
 
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
   <header class="hero">
-    <nav>
-      <h2>Mood Market</h2>
-      <button id="refreshBtn">Refresh Market</button>
+    <nav class="top-nav">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <h2>Market Decoder</h2>
+      </div>
+
+      <button id="refreshBtn">Refresh desk</button>
     </nav>
 
-    <div class="hero-content fade-in">
-      <p class="eyebrow">finance news, translated</p>
-      <h1>Understand the market based on how you feel today.</h1>
+    <section class="hero-copy">
+      <p class="tag">student market literacy desk</p>
+      <h1>Learn how to read the market, one number at a time.</h1>
       <p>
-        Mood Market turns live market data into student-friendly explanations,
-        so finance feels less intimidating and more useful.
+        Market Decoder turns live prices into plain-English explanations, helping students understand what SPY, QQQ, gold, oil, and crypto are actually signaling.
       </p>
-    </div>
+    </section>
   </header>
 
   <main>
-    <section class="panel">
-      <div class="section-heading">
-        <p class="eyebrow">start here</p>
-        <h2>Choose your market mood</h2>
+    <section class="glass-card intro-card">
+      <div>
+        <p class="tag">learning mode</p>
+        <h2>Choose what you want to understand</h2>
       </div>
 
       <div class="mood-grid">
-        <button class="mood-card active" data-mood="confused">Confused</button>
-        <button class="mood-card" data-mood="curious">Curious</button>
-        <button class="mood-card" data-mood="anxious">Anxious</button>
-        <button class="mood-card" data-mood="optimistic">Optimistic</button>
-        <button class="mood-card" data-mood="focused">Focused</button>
-        <button class="mood-card" data-mood="skeptical">Skeptical</button>
+        <button class="mood-card active" data-topic="bigPicture">big picture</button>
+        <button class="mood-card" data-topic="stocks">stocks</button>
+        <button class="mood-card" data-topic="tech">tech</button>
+        <button class="mood-card" data-topic="safety">gold/safety</button>
+        <button class="mood-card" data-topic="energy">oil/energy</button>
+        <button class="mood-card" data-topic="crypto">crypto</button>
       </div>
     </section>
 
-    <section class="dashboard">
-      <div class="market-card large-card">
-        <p class="eyebrow">live api data</p>
-        <h2>Crypto Market Snapshot</h2>
-        <p id="apiStatus">Loading live prices...</p>
+    <section class="main-grid">
+      <article class="glass-card">
+        <div class="card-heading">
+          <div>
+            <p class="tag">live market board</p>
+            <h2>Today’s signals</h2>
+          </div>
+          <span id="apiStatus" class="pill">loading...</span>
+        </div>
 
-        <div id="priceGrid" class="price-grid"></div>
-      </div>
+        <div id="assetGrid" class="asset-grid"></div>
+      </article>
 
-      <div class="market-card insight-card">
-        <p class="eyebrow">student translation</p>
-        <h2 id="moodTitle">Confused Market View</h2>
-        <p id="moodText">
-          Markets can feel random at first. Start by asking whether investors are taking more risk or pulling back.
-        </p>
+      <aside class="glass-card translation-card">
+        <p class="tag">plain-English decoder</p>
+        <h2 id="topicTitle">Big picture market read</h2>
 
-        <div class="mini-list">
-          <p><strong>Watch:</strong> 24-hour price changes</p>
-          <p><strong>Ask:</strong> Is this movement broad or only in one asset?</p>
-          <p><strong>Remember:</strong> One day of movement does not tell the whole story.</p>
+        <div class="sticky-note">
+          <strong>What this means:</strong>
+          <p id="topicText">
+            Start by comparing the assets. If SPY and QQQ are up, investors may be taking risk. If gold is up while stocks are down, investors may be looking for safety.
+          </p>
+        </div>
+
+        <div class="sticky-note alt">
+          <strong>Question to ask:</strong>
+          <p id="topicQuestion">
+            Are investors taking risk, avoiding risk, or reacting to a specific headline?
+          </p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="glass-card">
+      <p class="tag">how to read the board</p>
+      <h2>What each number is teaching you</h2>
+
+      <div class="readthrough">
+        <div>
+          <span>📊</span>
+          <p><strong>SPY:</strong> A quick read on the broad U.S. stock market. Green usually means investors feel better about growth or earnings.</p>
+        </div>
+
+        <div>
+          <span>💻</span>
+          <p><strong>QQQ:</strong> A tech-heavy signal. It reacts strongly to AI, interest rates, and growth expectations.</p>
+        </div>
+
+        <div>
+          <span>🥇</span>
+          <p><strong>GLD:</strong> A safety signal. Gold can rise when investors are nervous or watching inflation.</p>
+        </div>
+
+        <div>
+          <span>🛢️</span>
+          <p><strong>USO:</strong> An oil signal. Oil connects markets to inflation, supply shocks, and geopolitics.</p>
+        </div>
+
+        <div>
+          <span>₿</span>
+          <p><strong>Bitcoin/Ethereum:</strong> Risk appetite signals. Crypto often shows whether investors are willing to speculate.</p>
         </div>
       </div>
     </section>
 
-    <section class="panel">
-      <div class="section-heading">
-        <p class="eyebrow">learn the language</p>
-        <h2>Click a concept to expand it</h2>
-      </div>
+    <section class="two-column">
+      <article class="glass-card">
+        <p class="tag">global context</p>
+        <h2>Geopolitical headlines</h2>
+        <p class="subtle">Global headlines help explain why oil, gold, and stocks might move at the same time.</p>
+        <div id="newsList" class="news-list"></div>
+      </article>
+
+      <article class="glass-card">
+        <p class="tag">market signal detector</p>
+        <h2 id="signalTitle">Reading signal...</h2>
+        <div class="sticky-note">
+          <strong>Market read:</strong>
+          <p id="signalText">Waiting for live data to calculate the market signal.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="glass-card">
+      <p class="tag">click to study</p>
+      <h2>Mini market dictionary</h2>
 
       <div class="accordion">
-        <button class="accordion-btn">What does volatility mean?</button>
+        <button class="accordion-btn">What does “risk-on” mean?</button>
         <div class="accordion-content">
-          <p>Volatility means prices are moving a lot. It does not automatically mean something is good or bad. It means uncertainty is higher.</p>
+          <p>Risk-on means investors are more willing to buy assets that can move up a lot, like stocks, tech, and crypto.</p>
         </div>
 
-        <button class="accordion-btn">Why do investors care about Bitcoin?</button>
+        <button class="accordion-btn">What does “risk-off” mean?</button>
         <div class="accordion-content">
-          <p>Bitcoin is often treated as a risk asset. When investors feel confident, crypto can rise. When they feel nervous, it can fall quickly.</p>
+          <p>Risk-off means investors are more cautious. They may move toward safer assets like gold or cash.</p>
         </div>
 
-        <button class="accordion-btn">What is a 24-hour change?</button>
+        <button class="accordion-btn">Why do oil prices matter?</button>
         <div class="accordion-content">
-          <p>A 24-hour change shows how much the price moved compared with yesterday. It helps you see short-term momentum.</p>
+          <p>Oil affects transportation, inflation, and company costs. It can move because of supply issues, wars, or demand changes.</p>
+        </div>
+
+        <button class="accordion-btn">Why does QQQ move more than SPY sometimes?</button>
+        <div class="accordion-content">
+          <p>QQQ is more concentrated in large tech companies, so it can react more strongly to rates, AI headlines, and growth expectations.</p>
         </div>
       </div>
     </section>
 
-    <section class="journal panel">
-      <div class="section-heading">
-        <p class="eyebrow">your thinking</p>
-        <h2>Market Journal</h2>
-      </div>
+    <section class="glass-card journal">
+      <p class="tag">your market notebook</p>
+      <h2>Write your take</h2>
 
-      <textarea id="noteInput" placeholder="Write one sentence about what you think the market is signaling today..."></textarea>
+      <textarea id="noteInput" placeholder="Example: Today looks risk-on because SPY and QQQ are up while gold is flat."></textarea>
 
       <div class="journal-actions">
-        <button id="saveNoteBtn">Save Note</button>
-        <button id="clearNotesBtn" class="secondary-btn">Clear Notes</button>
+        <button id="saveNoteBtn">Save note</button>
+        <button id="clearNotesBtn" class="soft-btn">Clear notes</button>
       </div>
 
       <ul id="notesList"></ul>
@@ -110,7 +173,7 @@
   </main>
 
   <footer>
-    <p>Built for CSE 2004 Final Project by Blen Abebe.</p>
+    <p>Built by Blen Abebe for CSE 2004. Designed as a student-friendly market literacy desk.</p>
   </footer>
 
   <script src="script.js"></script>
