@@ -1,133 +1,352 @@
-const moodButtons = document.querySelectorAll(".mood-card");
-const moodTitle = document.getElementById("moodTitle");
-const moodText = document.getElementById("moodText");
-const priceGrid = document.getElementById("priceGrid");
-const apiStatus = document.getElementById("apiStatus");
+const FINNHUB_API_KEY = "d7sjdphr01qorsvivj30d7sjdphr01qorsvivj3g";
+const NEWS_API_KEY = "pub_bccbf695c23245ab90bfdbf9489cde8f";
 
-const moodMessages = {
-  confused: {
-    title: "Confused Market View",
-    text: "Start simple. If prices are green, investors are taking more risk today. If prices are red, investors may be pulling back. The goal is not to predict everything, but to understand the direction."
+const $ = (id) => document.getElementById(id);
+
+const topicButtons = document.querySelectorAll(".mood-card");
+const topicTitle = $("topicTitle");
+const topicText = $("topicText");
+const topicQuestion = $("topicQuestion");
+const assetGrid = $("assetGrid");
+const newsList = $("newsList");
+const apiStatus = $("apiStatus");
+const signalTitle = $("signalTitle");
+const signalText = $("signalText");
+
+const topics = {
+  bigPicture: {
+    title: "Big picture market read",
+    text: "Start by comparing the assets. If SPY and QQQ are up, investors may be comfortable taking risk. If gold is up while stocks are down, investors may be looking for safety.",
+    question: "Are investors taking risk, avoiding risk, or reacting to a specific headline?"
   },
-  curious: {
-    title: "Curious Market View",
-    text: "Look for patterns across assets. If Bitcoin, Ethereum, and Solana are all moving in the same direction, that says more about overall risk appetite than one specific coin."
+  stocks: {
+    title: "SPY: broad stock market",
+    text: "SPY is an ETF that tracks the S&P 500, which represents large U.S. companies. When SPY rises, it usually means investors are more confident about corporate earnings, growth, or the economy.",
+    question: "Is the overall market moving up, or is strength limited to one sector?"
   },
-  anxious: {
-    title: "Anxious Market View",
-    text: "A sharp move does not automatically mean panic. Markets are noisy. The better question is whether the move is connected to news, interest rates, earnings, or broader investor fear."
+  tech: {
+    title: "QQQ: tech and growth stocks",
+    text: "QQQ tracks the Nasdaq-100, which is heavily influenced by large technology and growth companies. It often reacts strongly to interest rates, AI momentum, and earnings expectations.",
+    question: "Is tech leading the market or dragging it down?"
   },
-  optimistic: {
-    title: "Optimistic Market View",
-    text: "When investors feel confident, riskier assets often rise first. Crypto can be a useful signal for whether investors are leaning toward growth and speculation."
+  safety: {
+    title: "Gold: the safety signal",
+    text: "Gold is often watched as a safe-haven asset. If gold rises when stocks fall, it can suggest investors are nervous, worried about inflation, or looking for protection.",
+    question: "Is gold moving because of fear, inflation, or rates?"
   },
-  focused: {
-    title: "Focused Market View",
-    text: "Compare the percentage changes. The asset with the biggest move is showing the strongest short-term reaction, but you still need context before calling it a trend."
+  energy: {
+    title: "Oil: the energy and geopolitics signal",
+    text: "Oil matters because it affects inflation, transportation costs, and global growth. Big oil moves can come from supply concerns, geopolitical conflict, or changes in demand.",
+    question: "Is oil moving because of supply risk or demand expectations?"
   },
-  skeptical: {
-    title: "Skeptical Market View",
-    text: "Do not trust one number alone. A green day can reverse quickly, and a red day can be temporary. Good analysis asks what changed and whether the reason actually matters."
+  crypto: {
+    title: "Crypto: risk appetite signal",
+    text: "Bitcoin and Ethereum are risk-sensitive assets. When crypto rises with stocks, investors may be more willing to speculate. When crypto falls sharply, it can show risk appetite weakening.",
+    question: "Is crypto confirming the stock market mood or moving differently?"
   }
 };
 
-moodButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    moodButtons.forEach((btn) => btn.classList.remove("active"));
-    button.classList.add("active");
+const equityAssets = [
+  { name: "S&P 500 ETF", label: "SPY tracks the S&P 500", symbol: "SPY", topic: "stocks" },
+  { name: "Nasdaq ETF", label: "QQQ tracks the Nasdaq-100", symbol: "QQQ", topic: "tech" },
+  { name: "Gold ETF", label: "GLD tracks gold exposure", symbol: "GLD", topic: "safety" },
+  { name: "Oil ETF", label: "USO tracks oil exposure", symbol: "USO", topic: "energy" }
+];
 
-    const selectedMood = button.dataset.mood;
-    moodTitle.textContent = moodMessages[selectedMood].title;
-    moodText.textContent = moodMessages[selectedMood].text;
-  });
-});
+const cryptoAssets = [
+  { name: "Bitcoin", label: "BTC/USD crypto pair", id: "bitcoin", topic: "crypto" },
+  { name: "Ethereum", label: "ETH/USD crypto pair", id: "ethereum", topic: "crypto" }
+];
 
-async function getMarketData() {
-  apiStatus.textContent = "Loading live prices from CoinGecko...";
-  priceGrid.innerHTML = "";
+const allAssets = [...equityAssets, ...cryptoAssets];
 
-  try {
-    const response = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true"
-    );
+function setTopic(topicName) {
+  const selected = topics[topicName] || topics.bigPicture;
 
-    const data = await response.json();
+  topicButtons.forEach((button) => button.classList.remove("active"));
 
-    const coins = [
-      { id: "bitcoin", name: "Bitcoin" },
-      { id: "ethereum", name: "Ethereum" },
-      { id: "solana", name: "Solana" }
-    ];
+  const activeButton = document.querySelector(`[data-topic="${topicName}"]`);
+  if (activeButton) activeButton.classList.add("active");
 
-    coins.forEach((coin) => {
-      const price = data[coin.id].usd;
-      const change = data[coin.id].usd_24h_change;
-      const changeClass = change >= 0 ? "positive" : "negative";
-      const sign = change >= 0 ? "+" : "";
-
-      const card = document.createElement("div");
-      card.className = "price-box";
-
-      card.innerHTML = `
-        <h3>${coin.name}</h3>
-        <p class="price">$${price.toLocaleString()}</p>
-        <p class="${changeClass}">${sign}${change.toFixed(2)}% today</p>
-      `;
-
-      priceGrid.appendChild(card);
-    });
-
-    apiStatus.textContent = "Live market data loaded successfully.";
-  } catch (error) {
-    apiStatus.textContent = "The live API did not load. Try refreshing the page.";
-  }
+  topicTitle.textContent = selected.title;
+  topicText.textContent = selected.text;
+  topicQuestion.textContent = selected.question;
 }
 
-document.querySelectorAll(".accordion-btn").forEach((button) => {
-  button.addEventListener("click", () => {
-    const content = button.nextElementSibling;
-    content.classList.toggle("open");
+function formatMoney(value) {
+  const number = Number(value);
+
+  if (!Number.isFinite(number)) return "Not loaded";
+
+  return `$${number.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })}`;
+}
+
+function formatPercent(value) {
+  const number = Number(value);
+
+  if (!Number.isFinite(number)) return "Change unavailable";
+
+  const sign = number > 0 ? "+" : "";
+  return `${sign}${number.toFixed(2)}% today`;
+}
+
+function renderLoadingCards() {
+  assetGrid.innerHTML = allAssets.map((asset) => `
+    <div class="asset-card">
+      <div class="asset-label">${asset.label}</div>
+      <h3>${asset.name}</h3>
+      <div class="asset-value">Loading...</div>
+      <div class="asset-change">pulling live data</div>
+    </div>
+  `).join("");
+}
+
+function renderAssets(assetData) {
+  assetGrid.innerHTML = assetData.map((asset) => {
+    const changeNumber = Number(asset.percentChange);
+    const changeClass = changeNumber > 0 ? "positive" : changeNumber < 0 ? "negative" : "";
+
+    return `
+      <div class="asset-card" data-topic="${asset.topic}">
+        <div class="asset-label">${asset.label}</div>
+        <h3>${asset.name}</h3>
+        <div class="asset-value">${asset.price}</div>
+        <div class="asset-change ${changeClass}">${asset.changeText}</div>
+      </div>
+    `;
+  }).join("");
+
+  document.querySelectorAll(".asset-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      setTopic(card.dataset.topic);
+    });
   });
-});
+}
 
-function saveNote() {
-  const input = document.getElementById("noteInput");
-  const notesList = document.getElementById("notesList");
+async function fetchFinnhubAsset(asset) {
+  const url = `https://finnhub.io/api/v1/quote?symbol=${asset.symbol}&token=${FINNHUB_API_KEY}`;
+  const response = await fetch(url);
+  const data = await response.json();
 
-  if (input.value.trim() === "") {
+  if (!response.ok || !data || data.c === 0) {
+    throw new Error(`Finnhub did not return ${asset.symbol}`);
+  }
+
+  return {
+    name: asset.name,
+    label: asset.label,
+    symbol: asset.symbol,
+    topic: asset.topic,
+    price: formatMoney(data.c),
+    percentChange: Number(data.dp),
+    changeText: formatPercent(data.dp)
+  };
+}
+
+async function fetchCryptoData() {
+  const response = await fetch(
+    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true"
+  );
+
+  const data = await response.json();
+
+  return cryptoAssets.map((asset) => {
+    const coin = data[asset.id];
+
+    return {
+      name: asset.name,
+      label: asset.label,
+      topic: asset.topic,
+      price: formatMoney(coin.usd),
+      percentChange: Number(coin.usd_24h_change),
+      changeText: formatPercent(coin.usd_24h_change)
+    };
+  });
+}
+
+function readMarketSignal(assetData) {
+  const spy = assetData.find((asset) => asset.symbol === "SPY");
+  const qqq = assetData.find((asset) => asset.symbol === "QQQ");
+  const gld = assetData.find((asset) => asset.symbol === "GLD");
+  const uso = assetData.find((asset) => asset.symbol === "USO");
+
+  if (!spy || !qqq || !gld || !uso) {
+    signalTitle.textContent = "Signal unavailable";
+    signalText.textContent = "The signal detector needs SPY, QQQ, GLD, and USO to load.";
     return;
   }
 
-  const notes = JSON.parse(localStorage.getItem("marketNotes")) || [];
-  notes.push(input.value.trim());
+  const stocksUp = spy.percentChange > 0 && qqq.percentChange > 0;
+  const goldUp = gld.percentChange > 0;
+  const oilUp = uso.percentChange > 0;
 
-  localStorage.setItem("marketNotes", JSON.stringify(notes));
+  if (stocksUp && !goldUp) {
+    signalTitle.textContent = "Risk-on signal";
+    signalText.textContent = "Stocks and tech are leading while gold is not. That usually suggests investors are more comfortable taking risk today.";
+  } else if (!stocksUp && goldUp) {
+    signalTitle.textContent = "Risk-off signal";
+    signalText.textContent = "Gold is stronger while stocks are weaker. That can suggest investors are looking for safety.";
+  } else if (oilUp && !stocksUp) {
+    signalTitle.textContent = "Energy pressure signal";
+    signalText.textContent = "Oil is moving up while stocks are not broadly strong. That can point to inflation pressure, supply concerns, or geopolitical risk.";
+  } else {
+    signalTitle.textContent = "Mixed market signal";
+    signalText.textContent = "The assets are not all telling the same story. This is when comparing headlines with price moves matters most.";
+  }
+}
+
+async function getMarketData() {
+  if (FINNHUB_API_KEY === "PASTE_YOUR_FINNHUB_KEY_HERE" || FINNHUB_API_KEY.trim() === "") {
+    apiStatus.textContent = "Finnhub key needed";
+    assetGrid.innerHTML = `
+      <div class="asset-card">
+        <h3>API key needed</h3>
+        <div class="asset-value">No live data yet</div>
+        <div class="asset-change negative">Paste your Finnhub API key at the top of script.js.</div>
+      </div>
+    `;
+    return;
+  }
+
+  apiStatus.textContent = "loading live prices...";
+  renderLoadingCards();
+
+  try {
+    const equityResults = await Promise.allSettled(
+      equityAssets.map((asset) => fetchFinnhubAsset(asset))
+    );
+
+    const successfulEquities = equityResults
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value);
+
+    const failedEquities = equityResults
+      .filter((result) => result.status === "rejected")
+      .map((result, index) => ({
+        name: equityAssets[index].name,
+        label: equityAssets[index].label,
+        symbol: equityAssets[index].symbol,
+        topic: equityAssets[index].topic,
+        price: "Not loaded",
+        percentChange: 0,
+        changeText: "Finnhub did not return this asset"
+      }));
+
+    const cryptoResults = await fetchCryptoData();
+
+    const finalData = [...successfulEquities, ...failedEquities, ...cryptoResults];
+
+    renderAssets(finalData);
+    readMarketSignal(finalData);
+
+    const now = new Date().toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit"
+    });
+
+    apiStatus.textContent = `live prices updated ${now}`;
+  } catch (error) {
+    console.error("Market data error:", error);
+    apiStatus.textContent = "data issue";
+  }
+}
+
+async function getGeopoliticalNews() {
+  newsList.innerHTML = "<p>Loading global headlines...</p>";
+
+  if (NEWS_API_KEY === "PASTE_YOUR_NEWSDATA_KEY_HERE" || NEWS_API_KEY.trim() === "") {
+    newsList.innerHTML = `
+      <div class="news-item">
+        <strong>News API key needed</strong>
+        <p class="news-source">Paste your NewsData.io API key at the top of script.js.</p>
+      </div>
+    `;
+    return;
+  }
+
+  try {
+    const query = encodeURIComponent("geopolitics OR oil OR inflation OR central bank OR trade");
+    const url = `https://newsdata.io/api/1/latest?apikey=${NEWS_API_KEY}&q=${query}&language=en&category=business,world`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.status !== "success" || !data.results || data.results.length === 0) {
+      throw new Error(data.results?.message || "No articles returned");
+    }
+
+    newsList.innerHTML = data.results.slice(0, 6).map((article) => `
+      <div class="news-item">
+        <a href="${article.link}" target="_blank" rel="noopener noreferrer">
+          ${article.title}
+        </a>
+        <div class="news-source">
+          ${article.source_name || "news source"}
+        </div>
+      </div>
+    `).join("");
+
+  } catch (error) {
+    console.error("NewsData error:", error);
+
+    newsList.innerHTML = `
+      <div class="news-item">
+        <strong>News is temporarily unavailable.</strong>
+        <p class="news-source">Check your NewsData API key or refresh in a minute.</p>
+      </div>
+    `;
+  }
+}
+
+function saveNote() {
+  const input = $("noteInput");
+  const note = input.value.trim();
+
+  if (!note) return;
+
+  const notes = JSON.parse(localStorage.getItem("marketDecoderNotes")) || [];
+  notes.unshift(note);
+
+  localStorage.setItem("marketDecoderNotes", JSON.stringify(notes));
   input.value = "";
-
   displayNotes();
 }
 
 function displayNotes() {
-  const notesList = document.getElementById("notesList");
-  const notes = JSON.parse(localStorage.getItem("marketNotes")) || [];
+  const notes = JSON.parse(localStorage.getItem("marketDecoderNotes")) || [];
 
-  notesList.innerHTML = "";
-
-  notes.forEach((note) => {
-    const li = document.createElement("li");
-    li.textContent = note;
-    notesList.appendChild(li);
-  });
+  $("notesList").innerHTML = notes.map((note) => `
+    <li>${note}</li>
+  `).join("");
 }
 
 function clearNotes() {
-  localStorage.removeItem("marketNotes");
+  localStorage.removeItem("marketDecoderNotes");
   displayNotes();
 }
 
-document.getElementById("saveNoteBtn").addEventListener("click", saveNote);
-document.getElementById("clearNotesBtn").addEventListener("click", clearNotes);
-document.getElementById("refreshBtn").addEventListener("click", getMarketData);
+topicButtons.forEach((button) => {
+  button.addEventListener("click", () => setTopic(button.dataset.topic));
+});
 
+document.querySelectorAll(".accordion-btn").forEach((button) => {
+  button.addEventListener("click", () => {
+    button.nextElementSibling.classList.toggle("open");
+  });
+});
+
+$("saveNoteBtn").addEventListener("click", saveNote);
+$("clearNotesBtn").addEventListener("click", clearNotes);
+
+$("refreshBtn").addEventListener("click", () => {
+  getMarketData();
+  getGeopoliticalNews();
+});
+
+setTopic("bigPicture");
 getMarketData();
+getGeopoliticalNews();
 displayNotes();
